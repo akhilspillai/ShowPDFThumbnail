@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Picture;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
 
             public void onPageFinished(final WebView view, String url) {
-                webView.postDelayed(new Runnable() {
+                new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
