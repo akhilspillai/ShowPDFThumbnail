@@ -1,1 +1,1 @@
-    var url = '../file1.pdf';
+    var url = '../file.pdf';

@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,10 +79,10 @@ public class MainActivity extends AppCompatActivity {
                                 mIvThumbnail.setImageBitmap(b);
                             }
                         } catch (Exception e) {
-
+                            Log.e("Akhil", "Error "+e.toString());
                         }
                     }
-                }, 1000);
+                }, 5000);
             }
         });
 
