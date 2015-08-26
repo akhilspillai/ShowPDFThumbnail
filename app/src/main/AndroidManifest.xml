@@ -3,6 +3,7 @@
     package="com.ajg.pdf.showpdfthumbnail" >
 
     <uses-permission android:name="ANDROID.PERMISSION.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="ANDROID.PERMISSION.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,12 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service
-            android:name=".ThumbnailService"
-            android:enabled="true"
-            android:exported="true" >
-        </service>
     </application>
 
 </manifest>

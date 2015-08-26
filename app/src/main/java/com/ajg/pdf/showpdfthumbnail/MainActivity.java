@@ -83,12 +83,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     public void fetchThumbnail() {
-
-        Bitmap b = Bitmap.createBitmap(
+        final Bitmap bit = Bitmap.createBitmap(
                 Math.round(300 * getResources().getDisplayMetrics().density),
                 Math.round(390 * getResources().getDisplayMetrics().density),
                 Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
+        Canvas c = new Canvas(bit);
 
         webView.draw(c);
 
@@ -98,13 +97,18 @@ public class MainActivity extends AppCompatActivity {
             fos = new FileOutputStream(
                     Environment.getExternalStorageDirectory()+"/thumbnail_new.jpg");
             if (fos != null) {
-                b = Bitmap.createScaledBitmap(b, 100, 130,
+                final Bitmap b = Bitmap.createScaledBitmap(bit, 100, 130,
                         true);
                 b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 
                 fos.close();
+                mIvThumbnail.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mIvThumbnail.setImageBitmap(b);
+                    }
+                });
             }
-            mIvThumbnail.setImageBitmap(b);
         } catch (Exception e) {
             Log.e("Akhil", "Error " + e.toString());
         }
