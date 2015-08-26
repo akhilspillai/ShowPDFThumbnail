@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.e("Akhil", "Error "+e.toString());
                         }
                     }
-                }, 5000);
+                }, 1000);
             }
         });
 
