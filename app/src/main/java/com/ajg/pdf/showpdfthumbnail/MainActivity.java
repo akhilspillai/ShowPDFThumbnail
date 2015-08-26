@@ -1,96 +1,49 @@
 package com.ajg.pdf.showpdfthumbnail;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Picture;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Environment;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
-import java.io.FileOutputStream;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements ThumbnailService.OnThumbnailCreateListener{
 
     private ImageView mIvThumbnail;
+    private ThumbnailService mThumbNailService;
 
-    private WebView webView;
+    private ServiceConnection mThumbnailConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ThumbnailService.ThumbnailBinder binder = (ThumbnailService.ThumbnailBinder)service;
+            mThumbNailService = binder.getService();
+
+            mThumbNailService.setThumbnailCreateListener(MainActivity.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mThumbNailService.setThumbnailCreateListener(MainActivity.this);
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mIvThumbnail = (ImageView) findViewById(R.id.iv_thumbnail);
-
-        webView = new WebView(this);
-        webView.setLayoutParams(new ViewGroup.LayoutParams(
-                Math.round(300 * getResources().getDisplayMetrics().density),
-                Math.round(390 * getResources().getDisplayMetrics().density)));
-
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setAllowFileAccessFromFileURLs(true);
-        settings.setAllowUniversalAccessFromFileURLs(true);
-        settings.setBuiltInZoomControls(true);
-
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setScrollbarFadingEnabled(false);
-        webView.setInitialScale(70);
-        webView.setWebChromeClient(new WebChromeClient());
-        webView.loadUrl("file:///android_asset/pdfviewer/index.html");
-        webView.setWebViewClient(new WebViewClient() {
-
-            public void onPageFinished(final WebView view, String url) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Bitmap b = Bitmap.createBitmap(
-                                Math.round(300 * getResources().getDisplayMetrics().density),
-                                Math.round(390 * getResources().getDisplayMetrics().density),
-                                Bitmap.Config.ARGB_8888);
-                        Canvas c = new Canvas(b);
-
-                        view.draw(c);
-
-                        FileOutputStream fos = null;
-                        try {
-
-                            fos = new FileOutputStream(
-                                    Environment.getExternalStorageDirectory()+"/thumbnail.jpg");
-                            if (fos != null) {
-                                b = Bitmap.createScaledBitmap(b, 100, 130,
-                                        true);
-                                b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-
-                                fos.close();
-                            }
-                            if (b != null) {
-                                mIvThumbnail.setImageBitmap(b);
-                            }
-                        } catch (Exception e) {
-                            Log.e("Akhil", "Error "+e.toString());
-                        }
-                    }
-                }, 1000);
-            }
-        });
-
-
+        Intent thumbnailIntent = new Intent(MainActivity.this, ThumbnailService.class);
+        bindService(thumbnailIntent, mThumbnailConnection, Context.BIND_AUTO_CREATE);
+        startService(thumbnailIntent);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -114,4 +67,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void thumbnailCreated(Bitmap b) {
+        mIvThumbnail.setImageBitmap(b);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        unbindService(mThumbnailConnection);
+        mThumbNailService.stopSelf();
+    }
 }
