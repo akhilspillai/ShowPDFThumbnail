@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mIvThumbnail = (ImageView) findViewById(R.id.iv_thumbnail);
-
         webView = new WebView(this);
         webView.setLayoutParams(new ViewGroup.LayoutParams(
                 Math.round(300 * getResources().getDisplayMetrics().density),
