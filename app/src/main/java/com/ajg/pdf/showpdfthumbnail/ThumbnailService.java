@@ -37,8 +37,6 @@ public class ThumbnailService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-
     }
 
     @Override
@@ -54,7 +52,7 @@ public class ThumbnailService extends Service {
         settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setBuiltInZoomControls(true);
 
-        webView.addJavascriptInterface(new JsObject(), "injectedObject");
+        webView.addJavascriptInterface(new JsObject(ThumbnailService.this), "injectedObject");
 
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(false);
@@ -96,7 +94,7 @@ public class ThumbnailService extends Service {
         void thumbnailCreated(Bitmap b);
     }
 
-    private void fetchThumbnail() {
+    public void fetchThumbnail() {
 
         Bitmap b = Bitmap.createBitmap(
                 Math.round(300 * getResources().getDisplayMetrics().density),
@@ -125,9 +123,16 @@ public class ThumbnailService extends Service {
             Log.e("Akhil", "Error " + e.toString());
         }
     }
+}
 
-    class JsObject {
-        @JavascriptInterface
-        public void rendered() { ThumbnailService.this.fetchThumbnail(); }
+
+class JsObject {
+
+    ThumbnailService mThumbnailService;
+
+    public JsObject(ThumbnailService thumbnailService) {
+        this.mThumbnailService = thumbnailService;
     }
+    @JavascriptInterface
+    public void rendered() { mThumbnailService.fetchThumbnail(); }
 }
