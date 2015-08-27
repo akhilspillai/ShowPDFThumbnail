@@ -1,6 +1,7 @@
-var url = '/storage/sdcard/file.pdf';
+var url = 'https://training.github.com/kit/downloads/github-git-cheat-sheet.pdf';
 
       PDFJS.getDocument(url).then(function (pdfDoc_) {
+        console.error("came here")
         pdfDoc = pdfDoc_;
         renderPage(1);
       });
@@ -39,6 +40,7 @@ var url = '/storage/sdcard/file.pdf';
             canvasContext: ctx,
             viewport: viewport
           };
+          console.error("came here")
           var renderTask = page.render(renderContext);
           // Wait for rendering to finish
           renderTask.promise.then(function () {
