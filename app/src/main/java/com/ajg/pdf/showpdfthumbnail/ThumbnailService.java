@@ -58,24 +58,12 @@ public class ThumbnailService extends Service {
         webView.setScrollbarFadingEnabled(false);
         webView.setInitialScale(70);
         webView.setWebChromeClient(new WebChromeClient());
-        webView.loadUrl("file:///android_asset/pdfviewer/index.html");
-        webView.setWebViewClient(new WebViewClient() {
-
-            public void onPageFinished(final WebView view, String url) {
-
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        fetchThumbnail();
-//                    }
-//                }, 2000);
-            }
-
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+            public void run() {
+                webView.loadUrl("file:///android_asset/pdfviewer/index.html");
             }
-        });
+        }, 5000);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -119,6 +107,7 @@ public class ThumbnailService extends Service {
             if (mListener != null) {
                 mListener.thumbnailCreated(b);
             }
+            stopSelf();
         } catch (Exception e) {
             Log.e("Akhil", "Error " + e.toString());
         }
@@ -134,5 +123,7 @@ class JsObject {
         this.mThumbnailService = thumbnailService;
     }
     @JavascriptInterface
-    public void rendered() { mThumbnailService.fetchThumbnail(); }
+    public void rendered() {
+        mThumbnailService.fetchThumbnail();
+    }
 }
